@@ -7,7 +7,9 @@ class ApplicationClient(BaseClient):
 		self.url = main_url + "/applications/"
 
 	def post(self, subscriber_id, status, title, description):
-		return requests.post(url=self.url, data={'subscriberId': subscriber_id,
-		                                         'status': status,
-		                                         'title': title,
-		                                         'description': description,})
+		return requests.post(url=self.url, data={
+			'subscriberId': subscriber_id,
+			'status': status,
+			'title': title,
+			'description': description
+		})

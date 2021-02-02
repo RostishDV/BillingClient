@@ -1,3 +1,6 @@
+import random
+import time
+
 import requests
 from clients.ApplicationClient import ApplicationClient
 from clients.BillingUserClient import BillingUserClient
@@ -23,13 +26,44 @@ sub_cli = SubscriberClient(main_url)
 
 
 sub_resp_list = []
+billing_user_resp_list = []
+debit_resp_list = []
+payment_resp_list = []
 
+
+start = time.time()
 for i in range(100):
-	resp = sub_cli.post('Иванов', 'Иван', 'Иванович', 'Чебоксары', 'пр.Мира', '40', '0', '206')
+	sub_resp = sub_cli.post('Иванов', 'Иван', 'Иванович', 'Чебоксары', 'пр.Мира', '40', '0', '206', 777777)
 
-	if resp.status_code == 200:
-		sub_resp_list.append(resp)
+	if sub_resp.status_code == 200:
+		sub_resp_list.append(sub_resp)
 
-for resp in sub_resp_list:
-	print(resp.json())
+print(f'spend time for add sub requests {time.time() - start}, generated sub_lis {len(sub_resp_list)}')
 
+
+start = time.time()
+successful_list = []
+unsuccessful_list = []
+for sub_resp in sub_resp_list:
+	for i in range(10):
+		app_resp = app_cli.post(sub_resp.json(), 'New', 'Install app', 'Install something application')
+		if app_resp.status_code == 200:
+			successful_list.append(app_resp)
+		else:
+			unsuccessful_list.append(app_resp)
+
+print(f'spend time for add app requests {time.time() - start}')
+
+
+for resp in successful_list:
+	print(f'    {resp.status_code}')
+
+print('unsuccessful')
+for resp in unsuccessful_list:
+	print(f'    {resp.status_code}')
+
+start = time.time()
+for sub_resp in sub_resp_list:
+	new_subs_resp = sub_cli.delete_by_id(sub_resp.json())
+
+print(f'spend time for delete requests {time.time() - start}')
