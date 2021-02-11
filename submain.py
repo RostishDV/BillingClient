@@ -14,22 +14,37 @@ from clients.SubscriberClient import SubscriberClient
 
 main_url = 'http://localhost:8080/'
 
-app_cli = ApplicationClient(main_url)
-billing_user_cli = BillingUserClient(main_url)
-debit_cli = DebitClient(main_url)
-payment_cli = PaymentClient(main_url)
-rate_cli = RateClient(main_url)
-service_cli = ServiceClient(main_url)
-sub_to_rate_cli = Subscriber2RateClient(main_url)
-sub_to_service_cli = Subscriber2ServiceClient(main_url)
-sub_cli = SubscriberClient(main_url)
+user = "user"
+password = "password"
 
-subs = sub_cli.get_by_id(10)
+reg_resp = requests.post(url=main_url + "registration", data={
+    'username': user,
+    'password': password
+})
 
-for subscriber in subs.json():
+print(reg_resp.status_code)
+
+session = requests.Session()
+session.auth = (user, password)
+
+app_cli = ApplicationClient(main_url, session)
+billing_user_cli = BillingUserClient(main_url, session)
+debit_cli = DebitClient(main_url, session)
+payment_cli = PaymentClient(main_url, session)
+rate_cli = RateClient(main_url, session)
+service_cli = ServiceClient(main_url, session)
+sub_to_rate_cli = Subscriber2RateClient(main_url, session)
+sub_to_service_cli = Subscriber2ServiceClient(main_url, session)
+sub_cli = SubscriberClient(main_url, session)
+
+payment_cli.post(100, 150., 0.)
+
+subs = sub_cli.get_by_id(100)
+
+for subscriber in subs.json()['applications']:
     print(f'{subscriber}')
 
-#
+
 # print(f'firs {sub_cli.get_by_id(identity).json()}')
 # resp = sub_cli.get_by_id(identity)
 #
